@@ -83,6 +83,15 @@ export async function POST(req: Request) {
     revalidatePath('/checkout/success');
     revalidatePath('/account');
 
+    // Send order confirmation email (idempotent - won't send twice)
+    try {
+      const { sendOrderEmailIfNeeded } = await import('@/server/orders');
+      await sendOrderEmailIfNeeded(result.order.id);
+    } catch (error) {
+      // Log but don't fail the request if email fails
+      console.error('Failed to send order confirmation email:', error);
+    }
+
     return NextResponse.json({
       success: true,
       orderId: result.order.id,

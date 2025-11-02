@@ -129,6 +129,8 @@ model Order {
   providerOrderId   String?     @unique
   providerPaymentId String?
   providerSignature String?
+  emailSentAt       DateTime?
+  emailMessageId    String?
   items             OrderItem[]
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt

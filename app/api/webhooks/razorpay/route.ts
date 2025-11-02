@@ -64,6 +64,15 @@ export async function POST(req: Request) {
             });
           }
         }
+
+        // Send order confirmation email (idempotent - won't send twice)
+        try {
+          const { sendOrderEmailIfNeeded } = await import('@/server/orders');
+          await sendOrderEmailIfNeeded(order.id);
+        } catch (error) {
+          // Log but don't fail the webhook if email fails
+          console.error('Failed to send order confirmation email:', error);
+        }
       }
     }
 

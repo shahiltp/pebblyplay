@@ -77,6 +77,11 @@ UPLOADTHING_APP_ID="your-uploadthing-app-id"
 RAZORPAY_KEY_ID="rzp_test_xxxxx"
 RAZORPAY_KEY_SECRET="xxxxxxxx"
 RAZORPAY_WEBHOOK_SECRET="whsec_xxxxx"
+
+# Resend (for order confirmation emails)
+# Get API key from https://resend.com
+RESEND_API_KEY="re_xxxxx"
+RESEND_FROM="PebblyPlay <orders@pebblyplay.com>"
 ```
 
 ### Routes
@@ -212,6 +217,41 @@ The CSP is configured to work with:
 - Next.js scripts and styles
 - UploadThing image uploads
 - Razorpay checkout (scripts and forms)
+
+### Email (Resend)
+
+Order confirmation emails are sent automatically when an order status becomes `PAID`.
+
+#### Setup
+
+1. **Get Resend API Key**: Sign up at [resend.com](https://resend.com) and create an API key
+2. **Verify Sending Domain**: Add and verify your domain in Resend dashboard
+3. **Configure Environment Variables**:
+   ```env
+   RESEND_API_KEY="re_xxxxx"
+   RESEND_FROM="PebblyPlay <orders@pebblyplay.com>"
+   ```
+   The `RESEND_FROM` email must match a verified domain in your Resend account.
+
+#### How It Works
+
+- Emails are triggered automatically when:
+  - Payment is verified via `/api/payments/verify` (frontend checkout flow)
+  - Payment is captured via Razorpay webhook (`/api/webhooks/razorpay`)
+- **Idempotency**: Emails are never sent twice. The system checks `emailSentAt` before sending.
+- If one path runs first and sends the email, the other path becomes a no-op.
+
+#### Email Content
+
+The order confirmation email includes:
+- Order number and date
+- Customer email
+- Table of items with variant options, quantities, and prices
+- Subtotal and total (formatted in INR)
+
+#### Preview Template
+
+Admins can preview email templates at `/admin/dev/email-preview?id=ORDER_ID` (OWNER/STAFF only).
 
 ### License
 
