@@ -158,6 +158,61 @@ pnpm build
 pnpm start
 ```
 
+### SEO & Security
+
+#### SEO Features
+
+- **Sitemap**: Automatically generated at `/sitemap.xml` with all ACTIVE products
+- **Robots.txt**: Available at `/robots.txt` with sitemap reference
+- **Canonical URLs**: All pages include canonical links to prevent duplicate content
+- **Meta Tags**: Open Graph and Twitter Card meta tags for social sharing
+- **JSON-LD Schema**: 
+  - Organization schema on homepage
+  - Product schema on product pages (with lowest variant price in offers)
+
+##### Adding New Domains to CSP
+
+If you need to add external services (analytics, email providers, etc.) to the Content Security Policy, edit `next.config.ts`:
+
+```typescript
+{
+  key: 'Content-Security-Policy',
+  value: [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://your-analytics.com",
+    // ... add your domains here
+  ].join('; '),
+}
+```
+
+##### Canonical Base URL
+
+Set the canonical base URL via environment variable:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://pebblyplay.com
+```
+
+If not set, it falls back to `NEXTAUTH_URL` or defaults to `https://pebblyplay.com`. Update `lib/site.ts` to change the default.
+
+##### Sitemap Filtering
+
+The sitemap (`app/sitemap.ts`) automatically filters products by `status: 'ACTIVE'`. Only active products are included in the sitemap.
+
+#### Security Headers
+
+The following security headers are configured in `next.config.ts`:
+
+- `X-Frame-Options: DENY` - Prevents clickjacking
+- `Referrer-Policy: strict-origin-when-cross-origin` - Controls referrer information
+- `Permissions-Policy` - Disables camera, microphone, geolocation
+- `Content-Security-Policy` - Restricts resource loading (allows Razorpay for checkout)
+
+The CSP is configured to work with:
+- Next.js scripts and styles
+- UploadThing image uploads
+- Razorpay checkout (scripts and forms)
+
 ### License
 
 Private - All rights reserved

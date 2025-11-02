@@ -5,6 +5,28 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CatalogFilters } from '@/components/catalog/CatalogFilters';
+import { Metadata } from 'next';
+import { getAbsoluteUrl, siteConfig } from '@/lib/site';
+
+export const metadata: Metadata = {
+  title: 'Catalog',
+  description: 'Browse our collection of delightful toys for curious minds',
+  alternates: {
+    canonical: getAbsoluteUrl('/catalog'),
+  },
+  openGraph: {
+    type: 'website',
+    url: getAbsoluteUrl('/catalog'),
+    siteName: siteConfig.name,
+    title: 'Catalog | ' + siteConfig.name,
+    description: 'Browse our collection of delightful toys for curious minds',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Catalog | ' + siteConfig.name,
+    description: 'Browse our collection of delightful toys for curious minds',
+  },
+};
 
 interface Props {
   searchParams: Promise<{

@@ -3,6 +3,8 @@ import { prisma } from '@/server/db';
 import { getMinVariantPrice } from '@/server/catalog';
 import { notFound } from 'next/navigation';
 import { ProductDetailClient } from '@/components/product/ProductDetailClient';
+import { Metadata } from 'next';
+import { getAbsoluteUrl, siteConfig } from '@/lib/site';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -22,6 +24,40 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product || product.status !== 'ACTIVE') {
+    return {};
+  }
+
+  const firstImage = product.images[0]?.url;
+  const description = product.description || `${product.title} - Available at ${siteConfig.name}`;
+
+  return {
+    title: product.title,
+    description,
+    alternates: {
+      canonical: getAbsoluteUrl(`/product/${slug}`),
+    },
+    openGraph: {
+      type: 'website',
+      url: getAbsoluteUrl(`/product/${slug}`),
+      siteName: siteConfig.name,
+      title: product.title,
+      description,
+      images: firstImage ? [firstImage] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.title,
+      description,
+      images: firstImage ? [firstImage] : [],
+    },
+  };
+}
+
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
@@ -32,7 +68,7 @@ export default async function ProductPage({ params }: Props) {
 
   const minPrice = getMinVariantPrice(product.variants);
 
-  // Build JSON-LD schema
+  // Build JSON-LD schema - ensure lowPrice uses lowest variant price
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -44,6 +80,7 @@ export default async function ProductPage({ params }: Props) {
       '@type': 'Offer',
       priceCurrency: 'INR',
       price: minPrice / 100,
+      lowPrice: minPrice / 100,
       availability: product.variants.some((v) => v.stock > 0)
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
