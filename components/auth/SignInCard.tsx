@@ -27,7 +27,7 @@ export function SignInCard() {
         <CardTitle>Sign in</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button variant="outline" className="w-full" onClick={() => signIn('google')}>Continue with Google</Button>
+        <Button variant="outline" className="w-full" onClick={() => signIn('google', { callbackUrl: '/account' })}>Continue with Google</Button>
         <div className="my-4" />
         <Form {...form}>
           <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { getCart, updateCartItem, removeFromCart, type CartItem } from '@/lib/cart';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 interface CartViewProps {
   serverPricedItems?: Array<{
@@ -20,21 +21,25 @@ interface CartViewProps {
 }
 
 export function CartView({ serverPricedItems, subtotalCents, onCheckout }: CartViewProps) {
+  const { data: session } = useSession();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setCart(getCart());
-  }, []);
+    const userId = session?.user?.id || null;
+    setCart(getCart(userId));
+  }, [session?.user?.id]);
 
   const handleUpdateQuantity = (variantId: string, quantity: number) => {
-    const updated = updateCartItem(variantId, quantity);
+    const userId = session?.user?.id || null;
+    const updated = updateCartItem(variantId, quantity, userId);
     setCart(updated);
     window.dispatchEvent(new Event('cartUpdated'));
   };
 
   const handleRemove = (variantId: string) => {
-    const updated = removeFromCart(variantId);
+    const userId = session?.user?.id || null;
+    const updated = removeFromCart(variantId, userId);
     setCart(updated);
     window.dispatchEvent(new Event('cartUpdated'));
   };

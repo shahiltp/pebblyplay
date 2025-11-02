@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import Script from 'next/script';
+import { useSession } from 'next-auth/react';
 
 declare global {
   interface Window {
@@ -22,8 +23,9 @@ interface CheckoutClientProps {
   userId?: string;
 }
 
-export function CheckoutClient({ userEmail, userId }: CheckoutClientProps) {
+export function CheckoutClient({ userEmail, userId: propUserId }: CheckoutClientProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [email, setEmail] = useState(userEmail || '');
   const [pricedItems, setPricedItems] = useState<any[]>([]);
@@ -34,7 +36,8 @@ export function CheckoutClient({ userEmail, userId }: CheckoutClientProps) {
 
   useEffect(() => {
     const loadCart = async () => {
-      const clientCart = getCart();
+      const userId = propUserId || session?.user?.id || null;
+      const clientCart = getCart(userId);
       setCart(clientCart);
 
       if (clientCart.length === 0) {
@@ -61,7 +64,7 @@ export function CheckoutClient({ userEmail, userId }: CheckoutClientProps) {
     };
 
     loadCart();
-  }, [router]);
+  }, [router, session?.user?.id]);
 
   const handleCheckout = async () => {
     if (cart.length === 0) {
@@ -123,6 +126,7 @@ export function CheckoutClient({ userEmail, userId }: CheckoutClientProps) {
         handler: async function (response: any) {
           // Payment successful - verify payment
           try {
+            const currentUserId = propUserId || session?.user?.id || null;
             const verifyResponse = await fetch('/api/payments/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -132,14 +136,14 @@ export function CheckoutClient({ userEmail, userId }: CheckoutClientProps) {
                 razorpay_signature: response.razorpay_signature,
                 items: cart,
                 email: checkoutEmail,
-                userId: userId,
+                userId: currentUserId,
               }),
             });
 
             const verifyData = await verifyResponse.json();
 
             if (verifyData.success) {
-              clearCart();
+              clearCart(currentUserId);
               toast.success('Payment successful!');
               router.push(`/checkout/success?oid=${verifyData.orderId}`);
             } else {

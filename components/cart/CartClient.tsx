@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getCart, type CartItem } from '@/lib/cart';
+import { getCart, type CartItem, updateCartItem, removeFromCart } from '@/lib/cart';
 import { priceCartAction } from '@/app/actions/cart';
 import { CartView } from './CartView';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export function CartClient() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [pricedItems, setPricedItems] = useState<any[]>([]);
   const [subtotal, setSubtotal] = useState(0);
@@ -15,7 +17,8 @@ export function CartClient() {
 
   useEffect(() => {
     const loadCart = async () => {
-      const clientCart = getCart();
+      const userId = session?.user?.id || null;
+      const clientCart = getCart(userId);
       setCart(clientCart);
 
       if (clientCart.length > 0) {
@@ -40,7 +43,7 @@ export function CartClient() {
     };
     window.addEventListener('cartUpdated', handleCartUpdate);
     return () => window.removeEventListener('cartUpdated', handleCartUpdate);
-  }, []);
+  }, [session?.user?.id]);
 
   const handleCheckout = () => {
     router.push('/checkout');

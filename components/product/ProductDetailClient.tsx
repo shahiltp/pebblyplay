@@ -6,6 +6,7 @@ import { Select } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { addToCart } from '@/lib/cart';
 import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
 import type { Product, ProductVariant, Image as ImageType, Category } from '@prisma/client';
 
 interface ProductDetailClientProps {
@@ -17,6 +18,7 @@ interface ProductDetailClientProps {
 }
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
+  const { data: session } = useSession();
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -33,7 +35,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       return;
     }
 
-    addToCart(selectedVariant.id, 1);
+    const userId = session?.user?.id || null;
+    addToCart(selectedVariant.id, 1, userId);
     toast.success(`${product.title} added to cart`);
     
     // Dispatch event to update cart badge
