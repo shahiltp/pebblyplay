@@ -9,17 +9,12 @@ export function FormField({ children, className }: { children: React.ReactNode; 
 }
 
 export function FormMessage({ name }: { name: string }) {
-  try {
-    const {
-      formState: { errors },
-    } = useFormContext();
-    const err = (errors as any)?.[name]?.message as string | undefined;
-    if (!err) return null;
-    return <p className="text-sm text-destructive">{err}</p>;
-  } catch {
-    // Form context not available
-    return null;
-  }
+  const {
+    formState: { errors },
+  } = useFormContext();
+  const err = (errors as any)?.[name]?.message as string | undefined;
+  if (!err) return null;
+  return <p className="text-sm text-destructive">{err}</p>;
 }
 
 

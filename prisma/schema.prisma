@@ -19,6 +19,13 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+}
+
 model User {
   id            String   @id @default(cuid())
   name          String?
@@ -109,6 +116,35 @@ model Image {
   alt       String?
   productId String?
   product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  userId            String?
+  email             String
+  currency          String      // "INR"
+  amountCents       Int
+  status            OrderStatus @default(PENDING) // PENDING, PAID, FAILED, CANCELED
+  provider          String      // "razorpay"
+  providerOrderId   String?     @unique
+  providerPaymentId String?
+  providerSignature String?
+  items             OrderItem[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@index([providerOrderId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id            String  @id @default(cuid())
+  orderId       String
+  productId     String
+  variantId     String
+  quantity      Int
+  unitPriceCents Int
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 

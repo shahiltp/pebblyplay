@@ -71,6 +71,12 @@ GOOGLE_CLIENT_SECRET="your-client-secret"
 # UploadThing (for image uploads)
 UPLOADTHING_SECRET="your-uploadthing-secret"
 UPLOADTHING_APP_ID="your-uploadthing-app-id"
+
+# Razorpay (for payments)
+# Get these from https://dashboard.razorpay.com
+RAZORPAY_KEY_ID="rzp_test_xxxxx"
+RAZORPAY_KEY_SECRET="xxxxxxxx"
+RAZORPAY_WEBHOOK_SECRET="whsec_xxxxx"
 ```
 
 ### Routes

@@ -26,8 +26,11 @@ export const authOptions: NextAuthOptions = {
         if (process.env.NODE_ENV !== 'production') {
           if (!globalThis.__pp_rate) globalThis.__pp_rate = {} as any;
           const key = `auth:${new Date().toISOString().slice(0, 16)}`;
-          (globalThis.__pp_rate[key] = (globalThis.__pp_rate[key] || 0) + 1);
-          if (globalThis.__pp_rate[key] > 50) return null;
+          const rate = globalThis.__pp_rate;
+          if (rate) {
+            (rate[key] = (rate[key] || 0) + 1);
+            if (rate[key] && rate[key] > 50) return null;
+          }
         }
 
         const parsed = signInSchema.safeParse(credentials);

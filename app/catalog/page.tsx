@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { CatalogFilters } from '@/components/catalog/CatalogFilters';
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     category?: string;
     minPrice?: string;
     maxPrice?: string;
@@ -15,23 +15,24 @@ interface Props {
     ageMax?: string;
     sort?: string;
     page?: string;
-  };
+  }>;
 }
 
 export default async function CatalogPage({ searchParams }: Props) {
-  const page = parseInt(searchParams.page || '1', 10);
+  const params = await searchParams;
+  const page = parseInt(params.page || '1', 10);
   const pageSize = 12;
 
   const filters = {
     status: 'ACTIVE' as const,
-    categorySlug: searchParams.category,
-    minPrice: searchParams.minPrice ? parseInt(searchParams.minPrice) * 100 : undefined, // Convert to cents
-    maxPrice: searchParams.maxPrice ? parseInt(searchParams.maxPrice) * 100 : undefined,
-    ageMin: searchParams.ageMin ? parseInt(searchParams.ageMin) : undefined,
-    ageMax: searchParams.ageMax ? parseInt(searchParams.ageMax) : undefined,
+    categorySlug: params.category,
+    minPrice: params.minPrice ? parseInt(params.minPrice) * 100 : undefined, // Convert to cents
+    maxPrice: params.maxPrice ? parseInt(params.maxPrice) * 100 : undefined,
+    ageMin: params.ageMin ? parseInt(params.ageMin) : undefined,
+    ageMax: params.ageMax ? parseInt(params.ageMax) : undefined,
   };
 
-  const sort = (searchParams.sort as any) || 'newest';
+  const sort = (params.sort as any) || 'newest';
 
   const result = await getProducts(filters, { page, pageSize }, sort);
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
@@ -41,16 +42,16 @@ export default async function CatalogPage({ searchParams }: Props) {
   };
 
   const buildQueryString = (updates: Record<string, string | undefined>) => {
-    const params = new URLSearchParams(Object.fromEntries(Object.entries(searchParams)));
+    const urlParams = new URLSearchParams(Object.fromEntries(Object.entries(params)));
     Object.entries(updates).forEach(([key, value]) => {
       if (value) {
-        params.set(key, value);
+        urlParams.set(key, value);
       } else {
-        params.delete(key);
+        urlParams.delete(key);
       }
     });
     // Don't delete page here, we'll handle it per-link
-    return params.toString();
+    return urlParams.toString();
   };
 
   return (
@@ -61,12 +62,12 @@ export default async function CatalogPage({ searchParams }: Props) {
         <div className="lg:col-span-1">
           <CatalogFilters
             categories={categories}
-            currentCategory={searchParams.category}
+            currentCategory={params.category}
             currentSort={sort}
-            currentMinPrice={searchParams.minPrice}
-            currentMaxPrice={searchParams.maxPrice}
-            currentAgeMin={searchParams.ageMin}
-            currentAgeMax={searchParams.ageMax}
+            currentMinPrice={params.minPrice}
+            currentMaxPrice={params.maxPrice}
+            currentAgeMin={params.ageMin}
+            currentAgeMax={params.ageMax}
           />
         </div>
 

@@ -49,7 +49,7 @@ export const productSchema = z.object({
 }).refine(
   (data) => {
     // Validate age range
-    if (data.ageMin !== null && data.ageMax !== null && data.ageMin > data.ageMax) {
+    if (data.ageMin != null && data.ageMax != null && data.ageMin > data.ageMax) {
       return false;
     }
     return true;

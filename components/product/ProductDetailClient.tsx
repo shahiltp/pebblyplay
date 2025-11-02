@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { addToCart } from '@/lib/cart';
+import { toast } from 'sonner';
 import type { Product, ProductVariant, Image as ImageType, Category } from '@prisma/client';
 
 interface ProductDetailClientProps {
@@ -26,8 +28,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   };
 
   const handleAddToCart = () => {
-    // Stub for cart functionality
-    alert(`Add to cart: ${product.title} - ${selectedVariant.sku}`);
+    if (!selectedVariant || selectedVariant.stock === 0) {
+      toast.error('Product is out of stock');
+      return;
+    }
+
+    addToCart(selectedVariant.id, 1);
+    toast.success(`${product.title} added to cart`);
+    
+    // Dispatch event to update cart badge
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
   // Build variant options for selector
@@ -89,7 +99,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           <p className="text-muted-foreground mb-4">{product.category.name}</p>
 
           <div className="text-3xl font-bold text-primary mb-4">
-            {formatPrice(selectedVariant.priceCents)}
+            {selectedVariant ? formatPrice(selectedVariant.priceCents) : 'Price not available'}
           </div>
 
           {product.description && (
@@ -132,17 +142,17 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               <CardContent className="p-4">
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="font-medium">SKU:</span> {selectedVariant.sku}
+                    <span className="font-medium">SKU:</span> {selectedVariant?.sku || 'N/A'}
                   </div>
                   <div>
                     <span className="font-medium">Stock:</span>{' '}
                     <span
-                      className={selectedVariant.stock > 0 ? 'text-green-600' : 'text-red-600'}
+                      className={(selectedVariant?.stock ?? 0) > 0 ? 'text-green-600' : 'text-red-600'}
                     >
-                      {selectedVariant.stock > 0 ? `In Stock (${selectedVariant.stock})` : 'Out of Stock'}
+                      {(selectedVariant?.stock ?? 0) > 0 ? `In Stock (${selectedVariant.stock})` : 'Out of Stock'}
                     </span>
                   </div>
-                  {Object.entries((selectedVariant.optionValues as Record<string, any>) || {}).map(
+                  {selectedVariant && Object.entries((selectedVariant.optionValues as Record<string, any>) || {}).map(
                     ([key, value]) => (
                       <div key={key}>
                         <span className="font-medium capitalize">{key}:</span> {String(value)}

@@ -12,6 +12,20 @@ const nextConfig = {
       { protocol: 'http', hostname: 'localhost' },
     ],
   },
+  // Allow Razorpay script
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

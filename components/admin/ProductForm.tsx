@@ -81,7 +81,8 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     }
   };
 
-  const handleImageUpload = async (files: Array<{ url: string; name: string }>) => {
+  const handleImageUpload = async (files?: Array<{ url: string; name: string }>) => {
+    if (!files || files.length === 0) return;
     const result = await createImagesAction(files);
     if (result.success && result.images) {
       const newImages = result.images;
@@ -125,6 +126,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
   const addVariantOption = (variantIndex: number, key: string, value: string) => {
     const variant = variants[variantIndex];
+    if (!variant) return;
     form.setValue(`variants.${variantIndex}.optionValues`, {
       ...variant.optionValues,
       [key]: value,
@@ -133,6 +135,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
   const removeVariantOption = (variantIndex: number, key: string) => {
     const variant = variants[variantIndex];
+    if (!variant) return;
     const { [key]: _, ...rest } = variant.optionValues;
     form.setValue(`variants.${variantIndex}.optionValues`, rest);
   };

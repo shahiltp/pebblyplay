@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Logo } from './Logo';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { CartBadge } from '@/components/cart/CartBadge';
 
 export async function Header() {
   const session = await getServerSession(authOptions);
@@ -15,7 +16,7 @@ export async function Header() {
         </Link>
         <nav className="flex items-center gap-6 text-sm">
           <Link href="/catalog">Catalog</Link>
-          <Link href="/cart">Cart</Link>
+          <CartBadge />
           {isAuthed ? <Link href="/account">Account</Link> : <Link href="/sign-in">Sign in</Link>}
           {(role === 'OWNER' || role === 'STAFF') && <Link href="/admin">Admin</Link>}
         </nav>

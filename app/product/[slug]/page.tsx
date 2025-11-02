@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { ProductDetailClient } from '@/components/product/ProductDetailClient';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
@@ -23,7 +23,8 @@ export async function generateStaticParams() {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const product = await getProductBySlug(params.slug);
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
   if (!product || product.status !== 'ACTIVE') {
     notFound();

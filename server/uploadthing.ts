@@ -4,7 +4,7 @@ import { UploadThingError } from 'uploadthing/server';
 const f = createUploadthing();
 
 export const ourFileRouter = {
-  productImages: f({ image: { maxFileSize: '5MB', maxFileCount: 10 } })
+  productImages: f({ image: { maxFileSize: '4MB' as const, maxFileCount: 10 } })
     .middleware(async ({ req }) => {
       // TODO: Add auth check here if needed
       // For now, we'll rely on the admin route protection

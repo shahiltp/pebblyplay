@@ -10,12 +10,12 @@ export function UploadThingButton({
   ...props
 }: {
   endpoint: 'productImages';
-  onClientUploadComplete?: (res?: { url: string; name: string }[]) => void;
+  onClientUploadComplete?: (res?: Array<{ url: string; name: string }>) => void;
   onUploadError?: (error: Error) => void;
   [key: string]: any;
 }) {
   return (
-    <UploadButton<OurFileRouter>
+    <UploadButton<OurFileRouter, 'productImages'>
       endpoint={endpoint}
       onClientUploadComplete={onClientUploadComplete}
       onUploadError={onUploadError}
@@ -31,12 +31,12 @@ export function UploadThingDropzone({
   ...props
 }: {
   endpoint: 'productImages';
-  onClientUploadComplete?: (res?: { url: string; name: string }[]) => void;
+  onClientUploadComplete?: (res?: Array<{ url: string; name: string }>) => void;
   onUploadError?: (error: Error) => void;
   [key: string]: any;
 }) {
   return (
-    <UploadDropzone<OurFileRouter>
+    <UploadDropzone<OurFileRouter, 'productImages'>
       endpoint={endpoint}
       onClientUploadComplete={onClientUploadComplete}
       onUploadError={onUploadError}
