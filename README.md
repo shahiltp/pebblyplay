@@ -87,12 +87,15 @@ RESEND_FROM="PebblyPlay <orders@pebblyplay.com>"
 ### Routes
 
 #### Public Routes
-- `/` - Homepage
+- `/` - Homepage with hero section and category cards
 - `/catalog` - Product catalog with filters, pagination, and sorting
 - `/product/[slug]` - Product detail page with ISR (60s revalidation)
 - `/sign-up` - User registration
 - `/sign-in` - User login
-- `/cart` - Shopping cart (coming soon)
+- `/cart` - Shopping cart
+- `/policies/privacy` - Privacy Policy
+- `/policies/terms` - Terms of Service
+- `/policies/shipping-and-returns` - Shipping and Returns Policy
 
 #### Protected Routes (Authentication Required)
 - `/account` - User account page
@@ -252,6 +255,29 @@ The order confirmation email includes:
 #### Preview Template
 
 Admins can preview email templates at `/admin/dev/email-preview?id=ORDER_ID` (OWNER/STAFF only).
+
+### Policies
+
+The site includes three policy pages accessible from the footer:
+
+- **Privacy Policy** (`/policies/privacy`) - Information about data collection, usage, and user rights
+- **Terms of Service** (`/policies/terms`) - Terms and conditions for using the website and services
+- **Shipping and Returns** (`/policies/shipping-and-returns`) - Shipping information and return policy for India
+
+All policy pages include:
+- Accessible headings with anchorable subheadings
+- SEO meta tags (Open Graph and Twitter Cards)
+- Canonical URLs
+- Contact information (support@pebblyplay.com)
+
+The policies use boilerplate text with placeholders for:
+- Company: "PebblyPlay"
+- Email: "support@pebblyplay.com"
+- Country: India
+- Currency: INR
+- Shipping: Domestic India baseline; refunds within 7 days for unopened toys
+
+**Note:** Policy content is editable and should be reviewed by legal counsel before production use.
 
 ### License
 
