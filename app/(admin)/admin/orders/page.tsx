@@ -6,15 +6,16 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     status?: string;
-  };
+  }>;
 }
 
 export default async function OrdersPage({ searchParams }: Props) {
   await requireRole(['OWNER', 'STAFF']);
 
-  const statusFilter = searchParams.status as OrderStatus | undefined;
+  const params = await searchParams;
+  const statusFilter = params.status as OrderStatus | undefined;
 
   const where: any = {};
   if (statusFilter) {

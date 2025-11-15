@@ -6,6 +6,10 @@ import { LogoutButton } from '@/components/account/LogoutButton';
 export default async function AccountPage() {
   const session = await requireUser();
   
+  if (!session.user) {
+    throw new Error('UNAUTHORIZED');
+  }
+  
   return (
     <main className="container py-10">
       <div className="max-w-2xl mx-auto space-y-6">

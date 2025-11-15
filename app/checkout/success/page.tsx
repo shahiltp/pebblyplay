@@ -5,13 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { notFound } from 'next/navigation';
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     oid?: string;
-  };
+  }>;
 }
 
 export default async function CheckoutSuccessPage({ searchParams }: Props) {
-  const orderId = searchParams.oid;
+  const params = await searchParams;
+  const orderId = params.oid;
 
   if (!orderId) {
     return (

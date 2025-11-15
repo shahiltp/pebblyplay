@@ -5,7 +5,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/server/db';
 import { signInSchema } from './validators';
 import { verifyPassword } from './password';
-import type { Adapter } from 'next-auth/adapters';
+import type { Adapter, AdapterUser, AdapterAccount } from 'next-auth/adapters';
 
 // Custom adapter that extends PrismaAdapter to handle account linking for existing users
 function createCustomAdapter(): Adapter {
@@ -13,7 +13,7 @@ function createCustomAdapter(): Adapter {
 
   return {
     ...baseAdapter,
-    async createUser(user) {
+    async createUser(user: AdapterUser) {
       // If user has email, check if user already exists
       if (user.email) {
         const existingUser = await prisma.user.findUnique({
@@ -30,7 +30,7 @@ function createCustomAdapter(): Adapter {
       // User doesn't exist, create it normally
       return await baseAdapter.createUser!(user);
     },
-    async linkAccount(account) {
+    async linkAccount(account: AdapterAccount) {
       try {
         // Try to link account normally first
         return await baseAdapter.linkAccount!(account);
