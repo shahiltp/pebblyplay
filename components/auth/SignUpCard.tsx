@@ -1,8 +1,10 @@
 "use client";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormField, FormMessage } from '@/components/ui/form';
@@ -32,6 +34,14 @@ export function SignUpCard() {
         <CardTitle>Create account</CardTitle>
       </CardHeader>
       <CardContent>
+        <Button variant="outline" className="w-full" onClick={() => signIn('google', { callbackUrl: '/account' })}>
+          Continue with Google
+        </Button>
+        <div className="my-4 flex items-center">
+          <div className="flex-1 border-t"></div>
+          <span className="px-2 text-sm text-muted-foreground">or</span>
+          <div className="flex-1 border-t"></div>
+        </div>
         <Form {...form}>
           <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField>
@@ -46,7 +56,7 @@ export function SignUpCard() {
             </FormField>
             <FormField>
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...form.register('password')} />
+              <PasswordInput id="password" {...form.register('password')} />
               <FormMessage name="password" />
             </FormField>
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
@@ -58,6 +68,10 @@ export function SignUpCard() {
     </Card>
   );
 }
+
+
+
+
 
 
 

@@ -7,17 +7,18 @@ import { ProductListFilters } from '@/components/admin/ProductListFilters';
 import { ProductStatus } from '@prisma/client';
 
 interface Props {
-  searchParams: {
+  searchParams: Promise<{
     search?: string;
     status?: string;
-  };
+  }>;
 }
 
 export default async function ProductsPage({ searchParams }: Props) {
   await requireRole(['OWNER', 'STAFF']);
 
-  const search = searchParams.search || '';
-  const statusFilter = searchParams.status as ProductStatus | undefined;
+  const params = await searchParams;
+  const search = params.search || '';
+  const statusFilter = params.status as ProductStatus | undefined;
 
   const where: any = {};
   if (search) {

@@ -12,24 +12,42 @@ export function ProductListFilters() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const search = formData.get('search')?.toString() || '';
-    const status = formData.get('status')?.toString() || '';
+    const status = searchParams.get('status') || '';
 
     const params = new URLSearchParams();
-    if (search) params.set('search', search);
-    if (status) params.set('status', status);
+    if (search) {
+      params.set('search', search);
+    }
+    if (status) {
+      params.set('status', status);
+    }
 
-    router.push(`?${params.toString()}`);
+    // Use push to trigger navigation and page re-render
+    const queryString = params.toString();
+    router.push(queryString ? `/admin/products?${queryString}` : '/admin/products');
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const status = e.target.value;
     const search = searchParams.get('search') || '';
 
-    const params = new URLSearchParams();
-    if (search) params.set('search', search);
-    if (status) params.set('status', status);
+    const params = new URLSearchParams(searchParams.toString());
+    
+    // Update or remove status param
+    if (status) {
+      params.set('status', status);
+    } else {
+      params.delete('status');
+    }
+    
+    // Preserve search if it exists
+    if (search) {
+      params.set('search', search);
+    }
 
-    router.push(`?${params.toString()}`);
+    // Use push to trigger navigation and page re-render
+    const queryString = params.toString();
+    router.push(queryString ? `/admin/products?${queryString}` : '/admin/products');
   };
 
   return (
@@ -39,14 +57,14 @@ export function ProductListFilters() {
           name="search"
           placeholder="Search by title..."
           defaultValue={searchParams.get('search') || ''}
-          className="max-w-sm"
+          className="max-w-md w-full"
         />
         <input type="hidden" name="status" value={searchParams.get('status') || ''} />
       </form>
-      <form method="get">
+      <div className="w-[150px] flex-shrink-0">
         <Select
           name="status"
-          defaultValue={searchParams.get('status') || ''}
+          value={searchParams.get('status') || ''}
           onChange={handleStatusChange}
         >
           <option value="">All Statuses</option>
@@ -54,8 +72,7 @@ export function ProductListFilters() {
           <option value="DRAFT">Draft</option>
           <option value="ARCHIVED">Archived</option>
         </Select>
-        <input type="hidden" name="search" value={searchParams.get('search') || ''} />
-      </form>
+      </div>
     </div>
   );
 }
