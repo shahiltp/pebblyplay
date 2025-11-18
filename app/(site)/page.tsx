@@ -1,8 +1,13 @@
 import { Metadata } from 'next';
 import { getAbsoluteUrl, siteConfig } from '@/lib/site';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Hero } from '@/components/store/Hero';
+import { Section } from '@/components/store/Section';
+import { CategoryPills } from '@/components/store/CategoryPills';
+import { ProductCard } from '@/components/store/ProductCard';
+import { getProducts } from '@/server/catalog';
+import { prisma } from '@/server/db';
+import { getMinVariantPrice } from '@/server/catalog';
+import { Shield, CreditCard, RotateCcw } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: {
@@ -38,25 +43,7 @@ export const metadata: Metadata = {
   },
 };
 
-const categoryCards = [
-  {
-    name: 'Plush',
-    slug: 'plush',
-    description: 'Soft and cuddly companions for every child',
-  },
-  {
-    name: 'Puzzles',
-    slug: 'puzzles',
-    description: 'Brain-teasing fun for developing minds',
-  },
-  {
-    name: 'STEM',
-    slug: 'stem',
-    description: 'Science, technology, engineering, and math toys',
-  },
-];
-
-export default function HomePage() {
+export default async function HomePage() {
   // Organization JSON-LD
   const organizationJsonLd = {
     '@context': 'https://schema.org',
@@ -66,50 +53,60 @@ export default function HomePage() {
     sameAs: [] as string[],
   };
 
+  // Fetch categories and popular products
+  const [categories, popularProducts] = await Promise.all([
+    prisma.category.findMany({ orderBy: { name: 'asc' } }),
+    getProducts({ status: 'ACTIVE' }, { page: 1, pageSize: 8 }, 'newest'),
+  ]);
+
+  const trustFeatures = [
+    { icon: Shield, label: 'Safe materials', description: 'Tested & certified' },
+    { icon: CreditCard, label: 'Cashless & UPI', description: 'Secure payments' },
+    { icon: RotateCcw, label: 'Easy returns', description: '7-day return policy' },
+  ];
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-      {/* Hero Section */}
-      <section className="w-full bg-gradient-to-b from-background to-muted/20 py-20">
-        <div className="container">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-display">
-              Play starts here.
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground">
-              Thoughtfully curated toys for curious minds.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button asChild size="lg" className="text-lg px-8">
-                <Link href="/catalog">Shop catalog</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8">
-                <Link href="/catalog?sort=newest">New arrivals</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
+      
+      <Section title="Shop by category">
+        <CategoryPills categories={categories} />
+      </Section>
 
-      {/* Category Cards Section */}
-      <section className="container py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {categoryCards.map((category) => (
-            <Card key={category.slug} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>{category.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">{category.description}</p>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href={`/catalog?category=${category.slug}`}>Explore {category.name}</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+      <Section title="Popular now" description="Discover our latest additions">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {popularProducts.products.map((product) => {
+            const minPrice = getMinVariantPrice(product.variants);
+            return (
+              <ProductCard key={product.id} product={product} minPrice={minPrice} />
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* Trust Strip */}
+      <section className="border-t bg-muted/30 py-8">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {trustFeatures.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <div key={feature.label} className="flex items-center gap-4 text-center md:text-left">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">{feature.label}</h3>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
     </>

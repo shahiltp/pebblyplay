@@ -2,9 +2,10 @@ import { getProducts } from '@/server/catalog';
 import { prisma } from '@/server/db';
 import { getMinVariantPrice } from '@/server/catalog';
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CatalogFilters } from '@/components/catalog/CatalogFilters';
+import { FilterBar } from '@/components/store/FilterBar';
+import { ProductCard } from '@/components/store/ProductCard';
+import { EmptyState } from '@/components/store/EmptyState';
 import { Metadata } from 'next';
 import { getAbsoluteUrl, siteConfig } from '@/lib/site';
 
@@ -59,10 +60,6 @@ export default async function CatalogPage({ searchParams }: Props) {
   const result = await getProducts(filters, { page, pageSize }, sort);
   const categories = await prisma.category.findMany({ orderBy: { name: 'asc' } });
 
-  const formatPrice = (cents: number) => {
-    return `₹${(cents / 100).toLocaleString('en-IN')}`;
-  };
-
   const buildQueryString = (updates: Record<string, string | undefined>) => {
     const urlParams = new URLSearchParams(Object.fromEntries(Object.entries(params)));
     Object.entries(updates).forEach(([key, value]) => {
@@ -77,85 +74,63 @@ export default async function CatalogPage({ searchParams }: Props) {
   };
 
   return (
-    <main className="container py-10">
-      <h1 className="text-3xl font-semibold mb-6">Catalog</h1>
+    <main>
+      <div className="container py-8">
+        <h1 className="text-3xl font-bold font-display mb-6">Catalog</h1>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-        <div className="lg:col-span-1">
-          <CatalogFilters
-            categories={categories}
-            currentCategory={params.category}
-            currentSort={sort}
-            currentMinPrice={params.minPrice}
-            currentMaxPrice={params.maxPrice}
-            currentAgeMin={params.ageMin}
-            currentAgeMax={params.ageMax}
+      <FilterBar
+        categories={categories}
+        currentCategory={params.category}
+        currentSort={sort}
+        currentMinPrice={params.minPrice}
+        currentMaxPrice={params.maxPrice}
+        currentAgeMin={params.ageMin}
+        currentAgeMax={params.ageMax}
+      />
+
+      <div className="container py-8">
+        {result.products.length === 0 ? (
+          <EmptyState
+            title="No products found"
+            message="Try adjusting your filters or browse all products."
+            actionLabel="Browse All Products"
+            actionHref="/catalog"
           />
-        </div>
-
-        <div className="lg:col-span-3">
-          {result.products.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <p>No products found matching your filters.</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+              {result.products.map((product) => {
+                const minPrice = getMinVariantPrice(product.variants);
+                return (
+                  <ProductCard key={product.id} product={product} minPrice={minPrice} />
+                );
+              })}
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {result.products.map((product) => {
-                  const minPrice = getMinVariantPrice(product.variants);
-                  const firstImage = product.images[0];
 
-                  return (
-                    <Link key={product.id} href={`/product/${product.slug}`}>
-                      <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
-                        <div className="aspect-square overflow-hidden rounded-t-lg bg-muted">
-                          {firstImage ? (
-                            <img
-                              src={firstImage.url}
-                              alt={firstImage.alt || product.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                              No Image
-                            </div>
-                          )}
-                        </div>
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-lg mb-2 line-clamp-2">{product.title}</h3>
-                          <p className="text-2xl font-bold text-primary mb-2">{formatPrice(minPrice)}</p>
-                          {product.ageMin !== null || product.ageMax !== null ? (
-                            <p className="text-sm text-muted-foreground">
-                              Ages {product.ageMin ?? '0'}-{product.ageMax ?? '12+'} years
-                            </p>
-                          ) : null}
-                        </CardContent>
-                      </Card>
+            {result.totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4">
+                {page > 1 && (
+                  <Button asChild variant="outline">
+                    <Link href={`?${buildQueryString({})}&page=${page - 1}`} aria-label="Previous page">
+                      Previous
                     </Link>
-                  );
-                })}
+                  </Button>
+                )}
+                <span className="text-sm text-muted-foreground">
+                  Page {page} of {result.totalPages}
+                </span>
+                {page < result.totalPages && (
+                  <Button asChild variant="outline">
+                    <Link href={`?${buildQueryString({})}&page=${page + 1}`} aria-label="Next page">
+                      Next
+                    </Link>
+                  </Button>
+                )}
               </div>
-
-              {result.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2">
-                  {page > 1 && (
-                    <Link href={`?${buildQueryString({})}&page=${page - 1}`}>
-                      <Button variant="outline">Previous</Button>
-                    </Link>
-                  )}
-                  <span className="text-sm text-muted-foreground">
-                    Page {page} of {result.totalPages}
-                  </span>
-                  {page < result.totalPages && (
-                    <Link href={`?${buildQueryString({})}&page=${page + 1}`}>
-                      <Button variant="outline">Next</Button>
-                    </Link>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+            )}
+          </>
+        )}
       </div>
     </main>
   );

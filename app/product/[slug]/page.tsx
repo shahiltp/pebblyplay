@@ -1,8 +1,10 @@
-import { getProductBySlug } from '@/server/catalog';
+import { getProductBySlug, getProducts } from '@/server/catalog';
 import { prisma } from '@/server/db';
 import { getMinVariantPrice } from '@/server/catalog';
 import { notFound } from 'next/navigation';
 import { ProductDetailClient } from '@/components/product/ProductDetailClient';
+import { Section } from '@/components/store/Section';
+import { ProductCard } from '@/components/store/ProductCard';
 import { Metadata } from 'next';
 import { getAbsoluteUrl, siteConfig } from '@/lib/site';
 
@@ -68,6 +70,16 @@ export default async function ProductPage({ params }: Props) {
 
   const minPrice = getMinVariantPrice(product.variants);
 
+  // Fetch related products (same category, excluding current product)
+  const relatedProducts = await getProducts(
+    { status: 'ACTIVE', categoryId: product.categoryId },
+    { page: 1, pageSize: 4 },
+    'newest'
+  );
+
+  // Filter out current product
+  const filteredRelated = relatedProducts.products.filter((p) => p.id !== product.id).slice(0, 4);
+
   // Build JSON-LD schema - ensure lowPrice uses lowest variant price
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -94,6 +106,18 @@ export default async function ProductPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ProductDetailClient product={product} />
+      {filteredRelated.length > 0 && (
+        <Section title="Related Products" description="You might also like">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredRelated.map((relatedProduct) => {
+              const relatedMinPrice = getMinVariantPrice(relatedProduct.variants);
+              return (
+                <ProductCard key={relatedProduct.id} product={relatedProduct} minPrice={relatedMinPrice} />
+              );
+            })}
+          </div>
+        </Section>
+      )}
     </>
   );
 }
