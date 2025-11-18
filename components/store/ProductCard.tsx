@@ -65,7 +65,7 @@ export function ProductCard({ product, minPrice, className }: ProductCardProps) 
     e.preventDefault();
     e.stopPropagation();
     // TODO: Implement quick add to cart
-    console.log('Quick add:', product.id);
+    // Quick add functionality will be implemented later
   };
 
   return (
