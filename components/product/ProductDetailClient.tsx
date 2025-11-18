@@ -100,7 +100,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   type="button"
                   onClick={() => setSelectedImageIndex(index)}
                   className={cn(
-                    'aspect-square rounded-xl overflow-hidden border-2 transition-all',
+                    'relative aspect-square rounded-xl overflow-hidden border-2 transition-all',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent',
                     index === selectedImageIndex
                       ? 'border-primary ring-2 ring-primary/20'

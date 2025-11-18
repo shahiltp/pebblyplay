@@ -2,12 +2,16 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { formatINR } from '@/lib/money';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
+import { addToCart } from '@/lib/cart';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: {
@@ -57,15 +61,40 @@ function AgeBadge({ ageMin, ageMax }: { ageMin: number | null; ageMax: number | 
 
 export function ProductCard({ product, minPrice, className }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
   const firstImage = product.images[0];
   const isOutOfStock = product.variants.every((v) => v.stock === 0);
   const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
 
+  // Get in-stock variants
+  const inStockVariants = product.variants.filter((v) => v.stock > 0);
+
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO: Implement quick add to cart
-    // Quick add functionality will be implemented later
+
+    // If out of stock, show error
+    if (isOutOfStock || inStockVariants.length === 0) {
+      toast.error(`${product.title} is out of stock`);
+      return;
+    }
+
+    // If only 1 in-stock variant, add it directly
+    if (inStockVariants.length === 1) {
+      const variant = inStockVariants[0];
+      if (variant) {
+        const userId = session?.user?.id || null;
+        addToCart(variant.id, 1, userId);
+        toast.success(`${product.title} added to cart`);
+        
+        // Dispatch event to update cart badge
+        window.dispatchEvent(new Event('cartUpdated'));
+      }
+    } else {
+      // Multiple variants - navigate to product page for selection
+      router.push(`/product/${product.slug}`);
+    }
   };
 
   return (
