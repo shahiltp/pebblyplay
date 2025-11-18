@@ -12,6 +12,8 @@ import { useState } from 'react';
 import { addToCart } from '@/lib/cart';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
+import { ImagePlaceholder } from '@/components/store/ImagePlaceholder';
+import { Chip } from '@/components/ui/chip';
 
 interface ProductCardProps {
   product: {
@@ -53,9 +55,9 @@ function AgeBadge({ ageMin, ageMax }: { ageMin: number | null; ageMax: number | 
     : `Up to ${ageMax}`;
 
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent/10 text-accent">
+    <Chip bg="rgba(79,70,229,0.18)">
       {ageText} years
-    </span>
+    </Chip>
   );
 }
 
@@ -100,7 +102,8 @@ export function ProductCard({ product, minPrice, className }: ProductCardProps) 
   return (
     <Card
       className={cn(
-        'group relative overflow-hidden transition-all hover:shadow-float',
+        'group relative overflow-hidden transition-all',
+        'hover:shadow-[0_14px_34px_rgba(15,23,42,0.08)] hover:-translate-y-0.5',
         isOutOfStock && 'opacity-60',
         className
       )}
@@ -108,7 +111,7 @@ export function ProductCard({ product, minPrice, className }: ProductCardProps) 
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/product/${product.slug}`} className="block" aria-label={`View ${product.title}`}>
-        <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+        <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-slate-100">
           {firstImage ? (
             <Image
               src={firstImage.url}
@@ -121,9 +124,7 @@ export function ProductCard({ product, minPrice, className }: ProductCardProps) 
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              No Image
-            </div>
+            <ImagePlaceholder />
           )}
           {isOutOfStock && (
             <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
@@ -150,7 +151,7 @@ export function ProductCard({ product, minPrice, className }: ProductCardProps) 
             <AgeBadge ageMin={product.ageMin} ageMax={product.ageMax} />
           </div>
           <ReviewStars />
-          <div className="flex items-center justify-between">
+          <div className="flex items-baseline justify-between gap-2">
             <p className="text-xl font-bold text-primary">{formatINR(minPrice)}</p>
             {totalStock > 0 && totalStock < 10 && (
               <span className="text-xs text-warn">Only {totalStock} left!</span>

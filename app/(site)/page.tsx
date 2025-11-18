@@ -75,8 +75,8 @@ export default async function HomePage() {
         showArt 
         artVariant="confetti"
         images={[
-          { src: '/brand/hero-1.svg', alt: 'Colorful plush toys arranged playfully' },
-          { src: '/brand/hero-2.svg', alt: 'Educational puzzle games for kids' },
+          { src: '/brand/hero-1.png', alt: 'Colorful plush toys arranged playfully' },
+          { src: '/brand/hero-2.png', alt: 'Educational puzzle games for kids' },
           { src: '/brand/hero-3.svg', alt: 'STEM learning toys and building blocks' },
         ]}
       />
@@ -97,19 +97,18 @@ export default async function HomePage() {
       </Section>
 
       {/* Trust Strip */}
-      <section className="border-t bg-muted/30 py-8">
+      <section className="border-t border-slate-200/70 pt-6 mt-8">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
             {trustFeatures.map((feature) => {
               const Icon = feature.icon;
               return (
                 <div key={feature.label} className="flex items-center gap-4 text-center md:text-left">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-primary" aria-hidden="true" />
+                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Icon className="w-7 h-7 text-primary" aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">{feature.label}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    <h3 className="font-semibold">{feature.label} — {feature.description}</h3>
                   </div>
                 </div>
               );

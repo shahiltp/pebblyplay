@@ -33,6 +33,9 @@ export function Hero({
 
   return (
     <section className={cn('relative w-full bg-gradient-to-b from-background to-muted/20 py-20 overflow-hidden', className)}>
+      {/* Subtle gradient band */}
+      <div className="pointer-events-none absolute inset-x-0 -top-16 h-40 bg-[linear-gradient(180deg,rgba(79,70,229,0.06),transparent)]" aria-hidden="true" />
+      
       {/* Decorative art shapes */}
       {showArt && (
         <div className="absolute inset-0 pointer-events-none hidden sm:block" aria-hidden="true">
@@ -80,12 +83,14 @@ export function Hero({
             </div>
           </div>
 
-          {/* Image Collage - Only on md+ screens */}
+          {/* Image Collage - Only on md+ screens, hide third on lg */}
           {displayImages.length > 0 && (
             <div className="hidden md:flex flex-col gap-4 relative">
-              {displayImages.map((image, index) => {
-                const rotations = ['rotate-2', '-rotate-2', 'rotate-1'];
-                const offsets = ['mt-0', 'mt-8', 'mt-4'];
+              {displayImages.slice(0, 2).map((image, index) => {
+                const rotations = ['rotate-2', '-rotate-2'];
+                const offsets = ['mt-0', 'mt-8'];
+                // Reduce sizes by ~25%
+                const widths = ['w-36', 'w-40'];
                 return (
                   <div
                     key={index}
@@ -94,9 +99,8 @@ export function Hero({
                       'hover:rotate-2 hover:scale-105',
                       rotations[index % rotations.length],
                       offsets[index % offsets.length],
-                      index === 0 && 'w-48',
-                      index === 1 && 'w-56 ml-auto',
-                      index === 2 && 'w-52'
+                      widths[index % widths.length],
+                      index === 1 && 'ml-auto'
                     )}
                   >
                     <div className="aspect-[4/5] relative">

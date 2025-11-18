@@ -11,6 +11,7 @@ import { useSession } from 'next-auth/react';
 import { formatINR } from '@/lib/money';
 import { ShoppingCart, Shield, Truck, RotateCcw, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Chip } from '@/components/ui/chip';
 import type { Product, ProductVariant, Image as ImageType, Category } from '@prisma/client';
 
 interface ProductDetailClientProps {
@@ -141,9 +142,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 {selectedVariant ? formatINR(selectedVariant.priceCents) : 'Price not available'}
               </div>
               {(product.ageMin !== null || product.ageMax !== null) && (
-                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent/10 text-accent">
+                <Chip bg="rgba(79,70,229,0.18)">
                   Ages {product.ageMin ?? '0'}-{product.ageMax ?? '12+'} years
-                </div>
+                </Chip>
               )}
             </div>
 
@@ -168,15 +169,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                         type="button"
                         onClick={() => setSelectedVariantIndex(index)}
                         className={cn(
-                          'px-4 py-2 rounded-full text-sm font-medium transition-all',
+                          'h-10 px-4 rounded-full text-sm font-medium transition-all',
                           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent',
                           isSelected
-                            ? 'bg-primary text-primary-foreground shadow-md'
+                            ? 'ring-2 ring-[var(--brand-accent)] bg-[var(--brand-accent)]/10 text-foreground'
                             : 'bg-muted text-muted-foreground hover:bg-muted/80'
                         )}
-                        aria-label={`Select variant: ${option.label}`}
+                        aria-label={`Select variant: ${option.label}${isSelected ? ' (Selected)' : ''}`}
                         aria-pressed={isSelected}
                       >
+                        {isSelected && <span className="sr-only">Selected: </span>}
                         {Object.entries(options).map(([key, value]) => (
                           <span key={key}>
                             {key}: {String(value)}
@@ -211,7 +213,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             <Button
               onClick={handleAddToCart}
               disabled={!selectedVariant || selectedVariant.stock === 0}
-              className="w-full"
+              className="w-full md:w-auto"
               size="lg"
               aria-label={`Add ${product.title} to cart`}
             >

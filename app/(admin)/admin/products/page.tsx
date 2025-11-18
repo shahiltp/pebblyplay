@@ -56,11 +56,11 @@ export default async function ProductsPage({ searchParams }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Updated</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="min-w-[200px]">Title</TableHead>
+              <TableHead className="min-w-[120px]">Category</TableHead>
+              <TableHead className="min-w-[100px]">Status</TableHead>
+              <TableHead className="min-w-[120px]">Updated</TableHead>
+              <TableHead className="text-right min-w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -88,7 +88,7 @@ export default async function ProductsPage({ searchParams }: Props) {
                       {product.status}
                     </span>
                   </TableCell>
-                  <TableCell>{new Date(product.updatedAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="tabular-nums">{new Date(product.updatedAt).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
                     <Link href={`/admin/products/${product.id}/edit`}>
                       <Button variant="outline" size="sm">

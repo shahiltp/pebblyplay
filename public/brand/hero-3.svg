@@ -1,7 +1,11 @@
 <svg width="400" height="500" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="400" height="500" fill="#06B6D4" fillOpacity="0.1"/>
-  <rect x="50" y="50" width="300" height="400" rx="20" fill="#06B6D4" fillOpacity="0.2" stroke="#06B6D4" strokeWidth="2"/>
-  <text x="200" y="220" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#06B6D4">🔬</text>
-  <text x="200" y="260" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#06B6D4">Replace me</text>
+  <rect width="400" height="500" rx="20" fill="#06B6D4"/>
+  
+  <path d="M0 400 C100 350 200 450 400 380 V500 H0 V400Z" fill="white" fill-opacity="0.15"/>
+  <path d="M0 0 V150 C100 100 250 200 400 120 V0 H0Z" fill="white" fill-opacity="0.1"/>
+  
+  <circle cx="200" cy="250" r="50" stroke="white" stroke-width="4" stroke-opacity="0.3"/>
+  <circle cx="260" cy="200" r="20" fill="white" fill-opacity="0.4"/>
+  <circle cx="150" cy="300" r="15" fill="white" fill-opacity="0.3"/>
+  <circle cx="220" cy="150" r="10" fill="white" fill-opacity="0.5"/>
 </svg>
-

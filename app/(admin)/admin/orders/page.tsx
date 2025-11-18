@@ -77,13 +77,13 @@ export default async function OrdersPage({ searchParams }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Items</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="min-w-[120px]">Order ID</TableHead>
+              <TableHead className="min-w-[200px]">Email</TableHead>
+              <TableHead className="min-w-[100px]">Amount</TableHead>
+              <TableHead className="min-w-[80px]">Items</TableHead>
+              <TableHead className="min-w-[100px]">Status</TableHead>
+              <TableHead className="min-w-[120px]">Created</TableHead>
+              <TableHead className="text-right min-w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -98,14 +98,14 @@ export default async function OrdersPage({ searchParams }: Props) {
                 <TableRow key={order.id}>
                   <TableCell className="font-mono text-sm">{order.id.slice(0, 8)}...</TableCell>
                   <TableCell>{order.email}</TableCell>
-                  <TableCell className="font-medium">{formatPrice(order.amountCents)}</TableCell>
-                  <TableCell>{order.items.length} item(s)</TableCell>
+                  <TableCell className="font-medium tabular-nums">{formatPrice(order.amountCents)}</TableCell>
+                  <TableCell className="tabular-nums">{order.items.length} item(s)</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded text-xs ${getStatusColor(order.status)}`}>
                       {order.status}
                     </span>
                   </TableCell>
-                  <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
+                  <TableCell className="tabular-nums">{new Date(order.createdAt).toLocaleString()}</TableCell>
                   <TableCell className="text-right">
                     <Link href={`/admin/orders/${order.id}`}>
                       <Button variant="outline" size="sm">

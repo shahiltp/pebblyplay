@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ChevronDown, Filter, X } from 'lucide-react';
+import { ChevronDown, Filter } from 'lucide-react';
 
 interface FilterBarProps {
   categories: Array<{ id: string; name: string; slug: string }>;
@@ -29,15 +29,6 @@ export function FilterBar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
-  const [isSticky, setIsSticky] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 100);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const buildQueryString = (updates: Record<string, string | undefined>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -63,12 +54,7 @@ export function FilterBar({
   const hasActiveFilters = currentCategory || currentMinPrice || currentMaxPrice || currentAgeMin || currentAgeMax;
 
   return (
-    <div
-      className={cn(
-        'bg-background border-b transition-all',
-        isSticky && 'sticky top-0 z-40 shadow-md'
-      )}
-    >
+    <div className="sticky top-14 z-30 bg-white/95 backdrop-blur-sm border-b border-slate-200/60">
       <div className="container py-4">
         {/* Mobile: Collapsible button */}
         <div className="lg:hidden">
@@ -214,21 +200,18 @@ export function FilterBar({
             </div>
           </div>
 
-          {/* Clear filters */}
-          {hasActiveFilters && (
-            <div className="flex justify-end">
-              <Button
-                variant="ghost"
-                size="sm"
+          {/* Reset filters */}
+          <div className="flex justify-end">
+            {hasActiveFilters && (
+              <button
                 onClick={clearFilters}
-                className="text-muted-foreground"
-                aria-label="Clear all filters"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Reset all filters"
               >
-                <X className="w-4 h-4 mr-2" />
-                Clear Filters
-              </Button>
-            </div>
-          )}
+                Reset filters
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
