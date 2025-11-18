@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ToyShapes } from '@/components/art/ToyShapes';
 
 interface HeroProps {
   headline?: string;
@@ -10,6 +11,8 @@ interface HeroProps {
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
   promoBadge?: string;
+  showArt?: boolean;
+  artVariant?: 'confetti' | 'blocks' | 'stars';
   className?: string;
 }
 
@@ -19,29 +22,29 @@ export function Hero({
   primaryCta = { label: 'Shop catalog', href: '/catalog' },
   secondaryCta = { label: 'New arrivals', href: '/catalog?sort=newest' },
   promoBadge = 'Free shipping over ₹999',
+  showArt = false,
+  artVariant = 'confetti',
   className,
 }: HeroProps) {
   return (
     <section className={cn('relative w-full bg-gradient-to-b from-background to-muted/20 py-20 overflow-hidden', className)}>
-      {/* Decorative floating shapes */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <ToyShape
-          className="absolute top-20 left-10 w-16 h-16 text-primary/20 animate-float"
-          style={{ animationDelay: '0s', animationDuration: '4s' }}
-        />
-        <ToyShape
-          className="absolute top-40 right-20 w-12 h-12 text-accent/20 animate-float"
-          style={{ animationDelay: '1s', animationDuration: '5s' }}
-        />
-        <ToyShape
-          className="absolute bottom-20 left-1/4 w-10 h-10 text-primary/15 animate-float"
-          style={{ animationDelay: '2s', animationDuration: '6s' }}
-        />
-        <ToyShape
-          className="absolute bottom-40 right-1/3 w-14 h-14 text-accent/15 animate-float"
-          style={{ animationDelay: '0.5s', animationDuration: '4.5s' }}
-        />
-      </div>
+      {/* Decorative art shapes */}
+      {showArt && (
+        <div className="absolute inset-0 pointer-events-none hidden sm:block" aria-hidden="true">
+          <div className="absolute top-20 left-10 w-16 h-16 animate-float" style={{ animationDelay: '0s', animationDuration: '4s' }}>
+            <ToyShapes variant={artVariant} opacity={0.2} />
+          </div>
+          <div className="absolute top-40 right-20 w-12 h-12 animate-float" style={{ animationDelay: '1s', animationDuration: '5s' }}>
+            <ToyShapes variant={artVariant} opacity={0.15} />
+          </div>
+          <div className="absolute bottom-20 left-1/4 w-10 h-10 animate-float" style={{ animationDelay: '2s', animationDuration: '6s' }}>
+            <ToyShapes variant={artVariant} opacity={0.12} />
+          </div>
+          <div className="absolute bottom-40 right-1/3 w-14 h-14 animate-float" style={{ animationDelay: '0.5s', animationDuration: '4.5s' }}>
+            <ToyShapes variant={artVariant} opacity={0.18} />
+          </div>
+        </div>
+      )}
 
       <div className="container relative z-10">
         <div className="max-w-3xl mx-auto text-center space-y-6">
@@ -68,25 +71,6 @@ export function Hero({
         </div>
       </div>
     </section>
-  );
-}
-
-function ToyShape({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return (
-    <svg
-      className={className}
-      style={style}
-      viewBox="0 0 100 100"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Simple toy shape - teddy bear outline */}
-      <circle cx="50" cy="35" r="15" />
-      <ellipse cx="50" cy="65" rx="20" ry="25" />
-      <circle cx="42" cy="32" r="3" />
-      <circle cx="58" cy="32" r="3" />
-      <path d="M 45 40 Q 50 45 55 40" stroke="currentColor" strokeWidth="2" fill="none" />
-    </svg>
   );
 }
 

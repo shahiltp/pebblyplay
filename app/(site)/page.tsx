@@ -71,7 +71,7 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-      <Hero />
+      <Hero showArt artVariant="confetti" />
       
       <Section title="Shop by category">
         <CategoryPills categories={categories} />
