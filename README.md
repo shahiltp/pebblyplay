@@ -406,6 +406,45 @@ All design tokens are defined as CSS variables in `styles/globals.css`:
 
 This allows for easy theming and customization without modifying component code.
 
+### Hero Images
+
+The Hero component supports optional image collages for visual appeal. Placeholder images are located in `/public/brand/`:
+
+- `hero-1.svg`, `hero-2.svg`, `hero-3.svg` - Placeholder SVGs with "Replace me" text
+
+**To replace with UploadThing URLs:**
+
+1. Upload your hero images via the admin panel or UploadThing dashboard
+2. Copy the image URLs from UploadThing
+3. Update the Hero component usage in `app/(site)/page.tsx`:
+
+```tsx
+<Hero 
+  images={[
+    { 
+      src: 'https://utfs.io/f/your-uploadthing-url-1', 
+      alt: 'Meaningful description of image 1' 
+    },
+    { 
+      src: 'https://utfs.io/f/your-uploadthing-url-2', 
+      alt: 'Meaningful description of image 2' 
+    },
+    { 
+      src: 'https://utfs.io/f/your-uploadthing-url-3', 
+      alt: 'Meaningful description of image 3' 
+    },
+  ]}
+/>
+```
+
+**Image Guidelines:**
+- Recommended aspect ratio: 4:5 (portrait)
+- Maximum 3 images displayed (staggered collage on md+ screens)
+- Images are hidden on mobile for performance
+- First image uses `priority` loading, others use `lazy` loading
+- All images require meaningful `alt` text for accessibility
+- Images have rounded-2xl frames and subtle hover rotation (respects prefers-reduced-motion)
+
 ### License
 
 Private - All rights reserved

@@ -71,7 +71,15 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-      <Hero showArt artVariant="confetti" />
+      <Hero 
+        showArt 
+        artVariant="confetti"
+        images={[
+          { src: '/brand/hero-1.svg', alt: 'Colorful plush toys arranged playfully' },
+          { src: '/brand/hero-2.svg', alt: 'Educational puzzle games for kids' },
+          { src: '/brand/hero-3.svg', alt: 'STEM learning toys and building blocks' },
+        ]}
+      />
       
       <Section title="Shop by category">
         <CategoryPills categories={categories} />
