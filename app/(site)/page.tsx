@@ -76,7 +76,7 @@ export default function HomePage() {
       <section className="w-full bg-gradient-to-b from-background to-muted/20 py-20">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-display">
               Play starts here.
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground">

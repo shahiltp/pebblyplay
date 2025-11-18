@@ -279,6 +279,133 @@ The policies use boilerplate text with placeholders for:
 
 **Note:** Policy content is editable and should be reviewed by legal counsel before production use.
 
+### Design System
+
+PebblyPlay uses a cohesive design system built on Tailwind CSS and shadcn/ui with custom tokens and theming.
+
+#### Color Tokens
+
+**Brand Colors:**
+- `--brand-primary`: #FF7A59 (Primary brand color)
+- `--brand-primary-600`: #FF6A43 (Darker variant)
+- `--brand-accent`: #4F46E5 (Accent color)
+- `--brand-accent-600`: #4338CA (Darker variant)
+
+**Semantic Colors:**
+- `success`: Green for success states
+- `warn`: Orange/yellow for warnings
+- `danger`: Red for errors/destructive actions
+
+**Neutral Palette:**
+- Full neutral scale from 50-950 for grays and backgrounds
+
+**Usage in Tailwind:**
+```tsx
+// Brand colors
+<div className="bg-brand-primary text-white">...</div>
+<div className="bg-brand-accent-600">...</div>
+
+// Semantic colors
+<div className="bg-success text-success-foreground">...</div>
+<div className="bg-warn text-warn-foreground">...</div>
+<div className="bg-danger text-danger-foreground">...</div>
+
+// Primary/Accent (mapped to brand)
+<Button variant="primary">Primary Button</Button>
+<Button variant="link">Link Button</Button>
+```
+
+#### Typography
+
+**Font Families:**
+- **Display**: Fredoka (for headings, hero text)
+- **Body**: Inter (for body text, UI)
+
+**Usage:**
+```tsx
+<h1 className="font-display">Display Heading</h1>
+<p className="font-sans">Body text</p>
+```
+
+#### Border Radius
+
+- `--radius`: 20px (default, used for buttons, cards)
+- `--radius-lg`: 30px (for larger elements)
+
+**Tailwind Classes:**
+- `rounded` or `rounded-2xl`: 20px
+- `rounded-lg`: 30px
+- `rounded-xl`: 18px (calculated)
+- `rounded-md`: 18px (calculated)
+- `rounded-sm`: 16px (calculated)
+
+#### Shadows
+
+**Custom Shadows:**
+- `--shadow-md`: Medium elevation shadow
+- `--shadow-lg`: Large elevation shadow
+
+**Utility Classes:**
+- `shadow-elevate`: Applies medium shadow
+- `hover:shadow-float`: Applies large shadow on hover with slight lift
+
+**Usage:**
+```tsx
+<div className="shadow-elevate">Card with elevation</div>
+<div className="hover:shadow-float">Hover to float</div>
+```
+
+#### Button Variants
+
+**Available Variants:**
+- `default` / `primary`: Brand primary color (orange)
+- `secondary`: Muted background
+- `outline`: Outlined style
+- `ghost`: Transparent with hover state
+- `link`: Accent color text with underline
+- `destructive`: Red for destructive actions
+
+**Sizes:**
+- `sm`: Small (h-9)
+- `default`: Default (h-11) - larger for better touch targets
+- `lg`: Large (h-14) - for hero CTAs
+- `icon`: Square icon button (h-11)
+
+**Usage:**
+```tsx
+<Button variant="primary" size="lg">Hero CTA</Button>
+<Button variant="secondary">Secondary Action</Button>
+<Button variant="link">Text Link</Button>
+```
+
+#### Animations
+
+**Available Animations:**
+- `animate-float`: Gentle floating animation (3s infinite)
+- `animate-fade-in`: Fade in with slide up (0.5s)
+
+**Usage:**
+```tsx
+<div className="animate-float">Floating element</div>
+<div className="animate-fade-in">Fade in on mount</div>
+```
+
+#### Theme Provider
+
+The app includes a `ThemeProvider` component for theme management. Currently set to light mode by default, but can be extended for dark mode support.
+
+**Location:** `components/ui/theme-provider.tsx`
+
+#### CSS Variables
+
+All design tokens are defined as CSS variables in `styles/globals.css`:
+- Colors (brand, semantic, neutrals)
+- Border radius
+- Shadows
+- Typography (via font variables)
+
+This allows for easy theming and customization without modifying component code.
+
 ### License
 
 Private - All rights reserved
