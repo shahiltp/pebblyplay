@@ -66,8 +66,14 @@ jobs:
 
       - name: Apply DB schema (migrate, fallback to push on brand-new DB)
         run: |
-          set -e
-          pnpm prisma migrate deploy || pnpm prisma db push
+          echo "Attempting to deploy migrations..."
+          if pnpm prisma migrate deploy 2>&1; then
+            echo "Migrations deployed successfully"
+          else
+            echo "Migration deploy failed (expected for fresh DB), using db push..."
+            pnpm prisma db push --accept-data-loss --skip-generate
+            echo "Schema pushed successfully"
+          fi
 
       - name: Lint
         run: pnpm lint
