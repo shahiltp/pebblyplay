@@ -15,15 +15,21 @@ interface Props {
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 
 export async function generateStaticParams() {
-  // Fetch all ACTIVE product slugs for static generation
-  const products = await prisma.product.findMany({
-    where: { status: 'ACTIVE' },
-    select: { slug: true },
-  });
+  try {
+    // Fetch all ACTIVE product slugs for static generation
+    const products = await prisma.product.findMany({
+      where: { status: 'ACTIVE' },
+      select: { slug: true },
+    });
 
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
+    return products.map((product) => ({
+      slug: product.slug,
+    }));
+  } catch (error) {
+    // Handle case where database is empty or tables don't exist (e.g., in CI)
+    console.warn('generateStaticParams: Could not fetch products:', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
