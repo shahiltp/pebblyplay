@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, feat/**, chore/**, fix/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pebblyplay_ci
+        ports: [ "5432:5432" ]
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pebblyplay_ci
+      NEXTAUTH_SECRET: testsecret
+      NEXTAUTH_URL: http://localhost:3000
+      RAZORPAY_KEY_ID: test
+      RAZORPAY_KEY_SECRET: test
+      RAZORPAY_WEBHOOK_SECRET: test
+      UPLOADTHING_SECRET: test
+      UPLOADTHING_APP_ID: test
+      RESEND_API_KEY: test
+      RESEND_FROM: "PebblyPlay <orders@example.com>"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm dlx prisma generate
+
+      - name: Migrate DB
+        run: pnpm dlx prisma migrate deploy
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
