@@ -160,18 +160,30 @@ export async function sendOrderConfirmation(orderId: string): Promise<{ messageI
     order.amountCents
   );
 
-  // Send via Resend
+  // Send via Resend  
   const shortId = orderId.slice(0, 8).toUpperCase();
-  const fromEmail = process.env.RESEND_FROM || 'PebblyPlay <orders@pebblyplay.com>';
+  const fromEmail = process.env.RESEND_FROM || 'PebblyPlay <delivered@resend.dev>';
+  
+  // Use test email in development, actual order email in production
+  const toEmail = process.env.NODE_ENV === 'production' 
+    ? order.email 
+    : process.env.RESEND_TEST_EMAIL || 'shahiltp05@gmail.com';
 
   const result = await resend.emails.send({
     from: fromEmail,
-    to: order.email,
+    to: toEmail,
     subject: `Your PebblyPlay order ${shortId}`,
     html,
   });
 
+  // Check for Resend API errors
+  if (result.error) {
+    console.error('Resend API error:', result.error);
+    throw new Error(`Failed to send email: ${JSON.stringify(result.error)}`);
+  }
+
   if (!result.data?.id) {
+    console.error('Resend response:', JSON.stringify(result, null, 2));
     throw new Error('Failed to send email: No message ID returned');
   }
 
